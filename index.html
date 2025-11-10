@@ -1,0 +1,71 @@
+<!-- #Document-Head: Meta-information and assets -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Design Field Guide</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- #Header: Language navigation -->
+    <header>
+        <nav class="language-selector">
+            <a href="#" class="active">EN</a> |
+            <a href="#">ES</a> |
+            <a href="#">中文</a>
+        </nav>
+    </header>
+
+    <!-- #Main-Container: Holds the two-column layout -->
+    <div class="container">
+
+        <!-- #Content-Section: Left column with text and form -->
+        <main class="content">
+            <h1>AI Design<br>Field Guide</h1>
+            <p class="subtitle">Stories, lessons, and insights from the designers shaping AI today.</p>
+            
+            <!-- #Email-Form: Input and dynamic submit button -->
+            <div class="email-form">
+                <input type="email" placeholder="email" id="emailInput">
+                <button type="submit" id="submitButton" style="display: none;">Submit</button>
+            </div>
+
+            <!-- #Meta-Info: Project credits and launch date -->
+            <div class="meta-info">
+                <div class="project-by">
+                    <p class="label">A project by:</p>
+                    <p class="names">Ryan Mather · Robin Chen · Federico Villa</p>
+                </div>
+                <div class="launching">
+                    <p class="label">Launching:</p>
+                    <p class="date">Winter 2025</p>
+                </div>
+            </div>
+        </main>
+
+        <!-- #Artwork-Section: Right column with the image -->
+        <aside class="artwork">
+            <img src="artwork.jpg" alt="AI generated artwork by Shawna X">
+            <p class="artist-name">Shawna X</p>
+        </aside>
+    </div>
+
+    <!-- #JavaScript-Logic: For dynamic submit button -->
+    <script>
+        const emailInput = document.getElementById('emailInput');
+        const submitButton = document.getElementById('submitButton');
+
+        emailInput.addEventListener('input', () => {
+            if (emailInput.value.trim() !== '') {
+                submitButton.style.display = 'inline-block';
+            } else {
+                submitButton.style.display = 'none';
+            }
+        });
+    </script>
+</body>
+</html>

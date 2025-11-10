@@ -1,0 +1,166 @@
+/* #Variables: Color palette and fonts */
+:root {
+    --bg-color: #FDFBF8;
+    --primary-red: #E23D28;
+    --secondary-red: #D85949;
+    --text-color: #333;
+    --font-family: 'DM Sans', sans-serif;
+    --border-color: #EADFD6;
+}
+
+/* #Global-Reset: Basic styles for all elements */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+/* #Body-Styles: Main page styling */
+body {
+    background-color: var(--bg-color);
+    font-family: var(--font-family);
+    color: var(--text-color);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 2rem;
+}
+
+/* #Layout: Main container for two-column layout */
+.container {
+    display: flex;
+    max-width: 1200px;
+    width: 100%;
+    gap: 4rem;
+    align-items: center;
+}
+
+/* #Header-Styles: Language selector positioning */
+header {
+    position: absolute;
+    top: 2rem;
+    right: 4rem;
+}
+
+/* #Language-Selector: Styling for language links */
+.language-selector a {
+    text-decoration: none;
+    color: var(--secondary-red);
+    margin: 0 0.2rem;
+    font-size: 0.9rem;
+    padding: 0 0.3rem;
+}
+
+/* #Content-Section: Left column styles */
+.content {
+    flex-basis: 45%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+/* #Typography: Headings and paragraphs */
+h1 {
+    font-size: 4rem;
+    color: var(--primary-red);
+    font-weight: 700;
+    line-height: 1.1;
+    margin-bottom: 1.5rem;
+}
+
+.subtitle {
+    color: var(--primary-red);
+    font-size: 1.2rem;
+    line-height: 1.5;
+    margin-bottom: 2rem;
+    max-width: 400px;
+}
+
+/* #Email-Form: Styles for the email input and button */
+.email-form input {
+    width: 100%;
+    max-width: 300px;
+    padding: 0.8rem 1rem;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    background-color: transparent;
+    font-family: var(--font-family);
+    font-size: 1rem;
+    color: var(--secondary-red);
+    transition: box-shadow 0.3s ease-in-out;
+}
+
+.email-form input:focus {
+    outline: none;
+    box-shadow: 0 0 10px rgba(226, 61, 40, 0.5);
+}
+
+.email-form input::placeholder {
+    color: var(--secondary-red);
+    opacity: 0.7;
+}
+
+.email-form {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.email-form button {
+    background-color: var(--primary-red);
+    color: var(--bg-color);
+    border: none;
+    padding: 0.8rem 1.5rem;
+    border-radius: 8px;
+    font-family: var(--font-family);
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.email-form button:hover {
+    background-color: #c03422;
+}
+
+/* #Meta-Info: "Project by" and "Launching" sections */
+.meta-info {
+    display: flex;
+    margin-top: 4rem;
+    gap: 4rem;
+    font-size: 0.9rem;
+}
+
+.meta-info .label {
+    color: var(--secondary-red);
+    margin-bottom: 0.3rem;
+}
+
+.meta-info .names,
+.meta-info .date {
+    color: var(--primary-red);
+}
+
+/* #Artwork-Section: Right column styles for the image */
+.artwork {
+    flex-basis: 55%;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.artwork img {
+    width: 50%;
+    height: auto;
+    display: block;
+}
+
+/* #Artist-Name: Styling for the artist's name overlay */
+.artist-name {
+    position: absolute;
+    bottom: 1rem;
+    right: 1rem;
+    color: var(--secondary-red);
+    font-size: 0.9rem;
+}
