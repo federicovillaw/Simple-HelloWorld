@@ -1,71 +1,315 @@
-<!-- #Document-Head: Meta-information and assets -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Design Field Guide</title>
+    <title>Hot Sauce Advent Calendar</title>
     <link rel="stylesheet" href="style.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
 </head>
 <body>
-    <!-- #Header: Language navigation -->
-    <header>
-        <nav class="language-selector">
-            <a href="#" class="active">EN</a> |
-            <a href="#">ES</a> |
-            <a href="#">中文</a>
-        </nav>
-    </header>
-
-    <!-- #Main-Container: Holds the two-column layout -->
     <div class="container">
-
-        <!-- #Content-Section: Left column with text and form -->
-        <main class="content">
-            <h1>AI Design<br>Field Guide</h1>
-            <p class="subtitle">Stories, lessons, and insights from the designers shaping AI today.</p>
-            
-            <!-- #Email-Form: Input and dynamic submit button -->
-            <div class="email-form">
-                <input type="email" placeholder="email" id="emailInput">
-                <button type="submit" id="submitButton" style="display: none;">Submit</button>
-            </div>
-
-            <!-- #Meta-Info: Project credits and launch date -->
-            <div class="meta-info">
-                <div class="project-by">
-                    <p class="label">A project by:</p>
-                    <p class="names">Ryan Mather · Robin Chen · Federico Villa</p>
-                </div>
-                <div class="launching">
-                    <p class="label">Launching:</p>
-                    <p class="date">Winter 2025</p>
+        <h1 class="title">Hot Sauce Advent Calendar</h1>
+        <p class="subtitle">Discover the top 20 hot sauces from around the world</p>
+        
+        <div class="cards-grid" id="cardsGrid">
+            <!-- Card 1 -->
+            <div class="card" onclick="flipCard(this)">
+                <div class="card-inner">
+                    <div class="card-front">
+                        <span class="country-name">Mexico</span>
+                    </div>
+                    <div class="card-back" onclick="event.stopPropagation()">
+                        <a href="https://www.amazon.com/s?k=Cholula+hot+sauce" target="_blank" class="sauce-name">Cholula</a>
+                    </div>
                 </div>
             </div>
-        </main>
 
-        <!-- #Artwork-Section: Right column with the image -->
-        <aside class="artwork">
-            <img src="artwork.jpg" alt="AI generated artwork by Shawna X">
-            <p class="artist-name">Shawna X</p>
-        </aside>
+            <!-- Card 2 -->
+            <div class="card" onclick="flipCard(this)">
+                <div class="card-inner">
+                    <div class="card-front">
+                        <span class="country-name">Thailand</span>
+                    </div>
+                    <div class="card-back" onclick="event.stopPropagation()">
+                        <a href="https://www.amazon.com/s?k=Sriracha+hot+sauce" target="_blank" class="sauce-name">Sriracha</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card 3 -->
+            <div class="card" onclick="flipCard(this)">
+                <div class="card-inner">
+                    <div class="card-front">
+                        <span class="country-name">USA</span>
+                    </div>
+                    <div class="card-back" onclick="event.stopPropagation()">
+                        <a href="https://www.amazon.com/s?k=Tabasco+hot+sauce" target="_blank" class="sauce-name">Tabasco</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card 4 -->
+            <div class="card" onclick="flipCard(this)">
+                <div class="card-inner">
+                    <div class="card-front">
+                        <span class="country-name">Jamaica</span>
+                    </div>
+                    <div class="card-back" onclick="event.stopPropagation()">
+                        <a href="https://www.amazon.com/s?k=Scotch+Bonnet+hot+sauce" target="_blank" class="sauce-name">Scotch Bonnet Sauce</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card 5 -->
+            <div class="card" onclick="flipCard(this)">
+                <div class="card-inner">
+                    <div class="card-front">
+                        <span class="country-name">Trinidad</span>
+                    </div>
+                    <div class="card-back" onclick="event.stopPropagation()">
+                        <a href="https://www.amazon.com/s?k=Trinidad+Scorpion+hot+sauce" target="_blank" class="sauce-name">Trinidad Scorpion Sauce</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card 6 -->
+            <div class="card" onclick="flipCard(this)">
+                <div class="card-inner">
+                    <div class="card-front">
+                        <span class="country-name">India</span>
+                    </div>
+                    <div class="card-back" onclick="event.stopPropagation()">
+                        <a href="https://www.amazon.com/s?k=Naga+Jolokia+hot+sauce" target="_blank" class="sauce-name">Naga Jolokia Sauce</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card 7 -->
+            <div class="card" onclick="flipCard(this)">
+                <div class="card-inner">
+                    <div class="card-front">
+                        <span class="country-name">Mexico</span>
+                    </div>
+                    <div class="card-back" onclick="event.stopPropagation()">
+                        <a href="https://www.amazon.com/s?k=Valentina+hot+sauce" target="_blank" class="sauce-name">Valentina</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card 8 -->
+            <div class="card" onclick="flipCard(this)">
+                <div class="card-inner">
+                    <div class="card-front">
+                        <span class="country-name">USA</span>
+                    </div>
+                    <div class="card-back" onclick="event.stopPropagation()">
+                        <a href="https://www.amazon.com/s?k=Frank%27s+RedHot+sauce" target="_blank" class="sauce-name">Frank's RedHot</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card 9 -->
+            <div class="card" onclick="flipCard(this)">
+                <div class="card-inner">
+                    <div class="card-front">
+                        <span class="country-name">USA</span>
+                    </div>
+                    <div class="card-back" onclick="event.stopPropagation()">
+                        <a href="https://www.amazon.com/s?k=Crystal+Hot+Sauce" target="_blank" class="sauce-name">Crystal Hot Sauce</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card 10 -->
+            <div class="card" onclick="flipCard(this)">
+                <div class="card-inner">
+                    <div class="card-front">
+                        <span class="country-name">Mexico</span>
+                    </div>
+                    <div class="card-back" onclick="event.stopPropagation()">
+                        <a href="https://www.amazon.com/s?k=El+Yucateco+hot+sauce" target="_blank" class="sauce-name">El Yucateco</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card 11 -->
+            <div class="card" onclick="flipCard(this)">
+                <div class="card-inner">
+                    <div class="card-front">
+                        <span class="country-name">USA</span>
+                    </div>
+                    <div class="card-back" onclick="event.stopPropagation()">
+                        <a href="https://www.amazon.com/s?k=Texas+Pete+hot+sauce" target="_blank" class="sauce-name">Texas Pete</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card 12 -->
+            <div class="card" onclick="flipCard(this)">
+                <div class="card-inner">
+                    <div class="card-front">
+                        <span class="country-name">Caribbean</span>
+                    </div>
+                    <div class="card-back" onclick="event.stopPropagation()">
+                        <a href="https://www.amazon.com/s?k=Matouk%27s+hot+sauce" target="_blank" class="sauce-name">Matouk's</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card 13 -->
+            <div class="card" onclick="flipCard(this)">
+                <div class="card-inner">
+                    <div class="card-front">
+                        <span class="country-name">USA</span>
+                    </div>
+                    <div class="card-back" onclick="event.stopPropagation()">
+                        <a href="https://www.amazon.com/s?k=Louisiana+Hot+Sauce" target="_blank" class="sauce-name">Louisiana Hot Sauce</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card 14 -->
+            <div class="card" onclick="flipCard(this)">
+                <div class="card-inner">
+                    <div class="card-front">
+                        <span class="country-name">Mexico</span>
+                    </div>
+                    <div class="card-back" onclick="event.stopPropagation()">
+                        <a href="https://www.amazon.com/s?k=Tapatio+hot+sauce" target="_blank" class="sauce-name">Tapatío</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card 15 -->
+            <div class="card" onclick="flipCard(this)">
+                <div class="card-inner">
+                    <div class="card-front">
+                        <span class="country-name">USA</span>
+                    </div>
+                    <div class="card-back" onclick="event.stopPropagation()">
+                        <a href="https://www.amazon.com/s?k=Secret+Aardvark+hot+sauce" target="_blank" class="sauce-name">Secret Aardvark</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card 16 -->
+            <div class="card" onclick="flipCard(this)">
+                <div class="card-inner">
+                    <div class="card-front">
+                        <span class="country-name">Mexico</span>
+                    </div>
+                    <div class="card-back" onclick="event.stopPropagation()">
+                        <a href="https://www.amazon.com/s?k=Salsa+Huichol+hot+sauce" target="_blank" class="sauce-name">Salsa Huichol</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card 17 -->
+            <div class="card" onclick="flipCard(this)">
+                <div class="card-inner">
+                    <div class="card-front">
+                        <span class="country-name">USA</span>
+                    </div>
+                    <div class="card-back" onclick="event.stopPropagation()">
+                        <a href="https://www.amazon.com/s?k=Melinda%27s+hot+sauce" target="_blank" class="sauce-name">Melinda's</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card 18 -->
+            <div class="card" onclick="flipCard(this)">
+                <div class="card-inner">
+                    <div class="card-front">
+                        <span class="country-name">Mexico</span>
+                    </div>
+                    <div class="card-back" onclick="event.stopPropagation()">
+                        <a href="https://www.amazon.com/s?k=Buffalo+hot+sauce+Mexico" target="_blank" class="sauce-name">Búfalo</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card 19 -->
+            <div class="card" onclick="flipCard(this)">
+                <div class="card-inner">
+                    <div class="card-front">
+                        <span class="country-name">USA</span>
+                    </div>
+                    <div class="card-back" onclick="event.stopPropagation()">
+                        <a href="https://www.amazon.com/s?k=Huy+Fong+Sriracha" target="_blank" class="sauce-name">Huy Fong Sriracha</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card 20 -->
+            <div class="card" onclick="flipCard(this)">
+                <div class="card-inner">
+                    <div class="card-front">
+                        <span class="country-name">Vietnam</span>
+                    </div>
+                    <div class="card-back" onclick="event.stopPropagation()">
+                        <a href="https://www.amazon.com/s?k=Sriracha+hot+sauce+Vietnam" target="_blank" class="sauce-name">Sriracha (Original)</a>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
-    <!-- #JavaScript-Logic: For dynamic submit button -->
     <script>
-        const emailInput = document.getElementById('emailInput');
-        const submitButton = document.getElementById('submitButton');
-
-        emailInput.addEventListener('input', () => {
-            if (emailInput.value.trim() !== '') {
-                submitButton.style.display = 'inline-block';
-            } else {
-                submitButton.style.display = 'none';
+        function flipCard(card) {
+            const wasFlipped = card.classList.contains('flipped');
+            card.classList.toggle('flipped');
+            
+            // Only create fire explosion if card is being flipped (not unflipped)
+            if (!wasFlipped) {
+                createFireExplosion(card);
             }
-        });
+        }
+
+        function createFireExplosion(card) {
+            const cardRect = card.getBoundingClientRect();
+            const cardCenterX = cardRect.left + cardRect.width / 2;
+            const cardCenterY = cardRect.top + cardRect.height / 2;
+            
+            // Create 15-20 fire emojis
+            const emojiCount = 15 + Math.floor(Math.random() * 6);
+            
+            for (let i = 0; i < emojiCount; i++) {
+                const fireEmoji = document.createElement('div');
+                fireEmoji.className = 'fire-emoji';
+                fireEmoji.textContent = '🔥';
+                
+                // Random starting position around the card
+                const angle = (Math.PI * 2 * i) / emojiCount + Math.random() * 0.5;
+                const distance = 30 + Math.random() * 40;
+                const startX = cardCenterX + Math.cos(angle) * distance;
+                const startY = cardCenterY + Math.sin(angle) * distance;
+                
+                fireEmoji.style.left = startX + 'px';
+                fireEmoji.style.top = startY + 'px';
+                
+                // Random animation duration and delay
+                const duration = 1 + Math.random() * 0.5;
+                const delay = Math.random() * 0.2;
+                fireEmoji.style.animationDuration = duration + 's';
+                fireEmoji.style.animationDelay = delay + 's';
+                
+                // Random movement direction
+                const moveX = (Math.random() - 0.5) * 200;
+                const moveY = -50 - Math.random() * 100;
+                fireEmoji.style.setProperty('--move-x', moveX + 'px');
+                fireEmoji.style.setProperty('--move-y', moveY + 'px');
+                
+                document.body.appendChild(fireEmoji);
+                
+                // Remove emoji after animation completes
+                setTimeout(() => {
+                    fireEmoji.remove();
+                }, (duration + delay) * 1000);
+            }
+        }
     </script>
 </body>
 </html>

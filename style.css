@@ -1,4 +1,4 @@
-/* #Variables: Color palette and fonts */
+/* Variables */
 :root {
     --bg-color: #FDFBF8;
     --primary-red: #E23D28;
@@ -6,161 +6,194 @@
     --text-color: #333;
     --font-family: 'DM Sans', sans-serif;
     --border-color: #EADFD6;
+    --card-shadow: rgba(0, 0, 0, 0.1);
 }
 
-/* #Global-Reset: Basic styles for all elements */
+/* Global Reset */
 * {
     box-sizing: border-box;
     margin: 0;
     padding: 0;
 }
 
-/* #Body-Styles: Main page styling */
+/* Body Styles */
 body {
     background-color: var(--bg-color);
     font-family: var(--font-family);
     color: var(--text-color);
-    display: flex;
-    justify-content: center;
-    align-items: center;
     min-height: 100vh;
-    padding: 2rem;
+    padding: 2rem 1rem;
 }
 
-/* #Layout: Main container for two-column layout */
+/* Container */
 .container {
-    display: flex;
     max-width: 1200px;
-    width: 100%;
-    gap: 4rem;
-    align-items: center;
+    margin: 0 auto;
+    text-align: center;
 }
 
-/* #Header-Styles: Language selector positioning */
-header {
-    position: absolute;
-    top: 2rem;
-    right: 4rem;
-}
-
-/* #Language-Selector: Styling for language links */
-.language-selector a {
-    text-decoration: none;
-    color: #000000;
-    margin: 0 0.2rem;
-    font-size: 0.9rem;
-    padding: 0 0.3rem;
-}
-
-/* #Content-Section: Left column styles */
-.content {
-    flex-basis: 45%;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-}
-
-/* #Typography: Headings and paragraphs */
-h1 {
-    font-size: 4rem;
-    color: #000000;
+/* Title */
+.title {
+    font-size: 3rem;
     font-weight: 700;
-    line-height: 1.1;
-    margin-bottom: 1.5rem;
+    color: var(--primary-red);
+    margin-bottom: 1rem;
+    line-height: 1.2;
 }
 
 .subtitle {
-    color: #000000;
     font-size: 1.2rem;
-    line-height: 1.5;
-    margin-bottom: 2rem;
-    max-width: 400px;
+    color: var(--text-color);
+    margin-bottom: 3rem;
+    opacity: 0.8;
 }
 
-/* #Email-Form: Styles for the email input and button */
-.email-form input {
-    width: 100%;
-    max-width: 300px;
-    padding: 0.8rem 1rem;
-    border: 1px solid var(--border-color);
-    border-radius: 8px;
-    background-color: transparent;
-    font-family: var(--font-family);
-    font-size: 1rem;
-    color: #000000;
-    transition: box-shadow 0.3s ease-in-out;
+/* Cards Grid */
+.cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 1.5rem;
+    padding: 2rem 0;
 }
 
-.email-form input:focus {
-    outline: none;
-    box-shadow: 0 0 10px rgba(226, 61, 40, 0.5);
-}
-
-.email-form input::placeholder {
-    color: #000000;
-    opacity: 0.7;
-}
-
-.email-form {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-}
-
-.email-form button {
-    background-color: var(--primary-red);
-    color: var(--bg-color);
-    border: none;
-    padding: 0.8rem 1.5rem;
-    border-radius: 8px;
-    font-family: var(--font-family);
-    font-size: 1rem;
+/* Card Container */
+.card {
+    perspective: 1000px;
+    height: 200px;
     cursor: pointer;
-    transition: background-color 0.3s ease;
 }
 
-.email-form button:hover {
-    background-color: #c03422;
-}
-
-/* #Meta-Info: "Project by" and "Launching" sections */
-.meta-info {
-    display: flex;
-    margin-top: 4rem;
-    gap: 4rem;
-    font-size: 0.9rem;
-}
-
-.meta-info .label {
-    color: #000000;
-    margin-bottom: 0.3rem;
-}
-
-.meta-info .names,
-.meta-info .date {
-    color: #000000;
-}
-
-/* #Artwork-Section: Right column styles for the image */
-.artwork {
-    flex-basis: 55%;
+/* Card Inner (flip container) */
+.card-inner {
     position: relative;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    width: 100%;
+    height: 100%;
+    text-align: center;
+    transition: transform 0.6s;
+    transform-style: preserve-3d;
 }
 
-.artwork img {
-    width: 50%;
-    height: auto;
-    display: block;
+.card.flipped .card-inner {
+    transform: rotateY(180deg);
 }
 
-/* #Artist-Name: Styling for the artist's name overlay */
-.artist-name {
+/* Card Front and Back */
+.card-front,
+.card-back {
     position: absolute;
-    bottom: 1rem;
-    right: 1rem;
-    color: #000000;
-    font-size: 0.9rem;
+    width: 100%;
+    height: 100%;
+    backface-visibility: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px var(--card-shadow);
+    transition: box-shadow 0.3s ease;
+}
+
+.card-front {
+    background: linear-gradient(135deg, var(--primary-red) 0%, var(--secondary-red) 100%);
+    color: white;
+}
+
+.card-back {
+    background: linear-gradient(135deg, #fff 0%, #f8f8f8 100%);
+    color: var(--text-color);
+    transform: rotateY(180deg);
+    border: 2px solid var(--primary-red);
+    flex-direction: column;
+    padding: 0.5rem;
+}
+
+.card:hover .card-front,
+.card:hover .card-back {
+    box-shadow: 0 6px 12px rgba(226, 61, 40, 0.3);
+}
+
+/* Text Styles */
+.country-name,
+.sauce-name {
+    font-size: 1.3rem;
+    font-weight: 700;
+    padding: 1rem;
+    word-wrap: break-word;
+    line-height: 1.4;
+}
+
+.sauce-name {
+    color: var(--primary-red);
+    font-size: 1.1rem;
+    text-decoration: none;
+    display: inline-block;
+    transition: transform 0.2s ease, color 0.2s ease;
+}
+
+.sauce-name:hover {
+    color: var(--secondary-red);
+    transform: scale(1.05);
+    text-decoration: underline;
+}
+
+/* Fire Emoji Animation */
+.fire-emoji {
+    position: fixed;
+    font-size: 2rem;
+    pointer-events: none;
+    z-index: 9999;
+    animation: fireExplode var(--animation-duration, 1.5s) ease-out forwards;
+    animation-delay: var(--animation-delay, 0s);
+}
+
+@keyframes fireExplode {
+    0% {
+        opacity: 1;
+        transform: translate(0, 0) scale(1) rotate(0deg);
+    }
+    100% {
+        opacity: 0;
+        transform: translate(var(--move-x, 0), var(--move-y, -100px)) scale(0.3) rotate(360deg);
+    }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .title {
+        font-size: 2rem;
+    }
+
+    .subtitle {
+        font-size: 1rem;
+    }
+
+    .cards-grid {
+        grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+        gap: 1rem;
+    }
+
+    .card {
+        height: 160px;
+    }
+
+    .country-name,
+    .sauce-name {
+        font-size: 1rem;
+    }
+
+}
+
+@media (max-width: 480px) {
+    .cards-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .card {
+        height: 150px;
+    }
+
+    .country-name,
+    .sauce-name {
+        font-size: 0.9rem;
+    }
+
 }
