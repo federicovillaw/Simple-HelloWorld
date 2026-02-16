@@ -3,123 +3,1239 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hello World</title>
+    <title>8-Bit Tennis</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-
-    <!-- Navigation -->
-    <nav class="nav">
-        <div class="nav-inner">
-            <span class="nav-logo">HW</span>
-            <ul class="nav-links">
-                <li><a href="#features">Features</a></li>
-                <li><a href="#story">Story</a></li>
-            </ul>
-        </div>
-    </nav>
-
-    <!-- Hero -->
-    <section class="hero" id="hero">
-        <div class="hero-orb hero-orb--1" aria-hidden="true"></div>
-        <div class="hero-orb hero-orb--2" aria-hidden="true"></div>
-        <div class="hero-orb hero-orb--3" aria-hidden="true"></div>
-
-        <div class="hero-content">
-            <h1 class="hero-title">
-                <span class="hero-title-line hero-title-line--1">Hello</span>
-                <span class="hero-title-line hero-title-line--2">World.</span>
-            </h1>
-            <p class="hero-subtitle">A journey begins with a single word.</p>
-            <a href="#features" class="hero-cta">Explore</a>
-        </div>
-
-        <div class="scroll-indicator" aria-hidden="true">
-            <div class="scroll-indicator-arrow"></div>
-        </div>
-    </section>
-
-    <!-- Feature Cards -->
-    <section class="features" id="features">
-        <div class="features-inner">
-            <h2 class="section-heading fade-up">Built different.</h2>
-
-            <div class="cards-grid">
-                <div class="card fade-up" style="--stagger: 0">
-                    <div class="card-icon">&#9670;</div>
-                    <h3 class="card-title">Design</h3>
-                    <p class="card-text">Every pixel placed with intention. Clean interfaces that feel invisible.</p>
+    <div id="game-container">
+        <div id="scanlines" aria-hidden="true"></div>
+        <canvas id="game-canvas" width="640" height="480"></canvas>
+        <div id="ui-overlay">
+            <div id="score-display">
+                <div id="score-left">
+                    <span class="score-label">YOU</span>
+                    <span class="score-games" id="player-games">0</span>
+                    <span class="score-points" id="player-points">0</span>
                 </div>
-
-                <div class="card fade-up" style="--stagger: 1">
-                    <div class="card-icon">&#9679;</div>
-                    <h3 class="card-title">Motion</h3>
-                    <p class="card-text">Animation that guides, not distracts. Purpose in every transition.</p>
+                <div id="score-set">
+                    <span class="score-label">SET</span>
+                    <span id="set-number">1</span>
                 </div>
-
-                <div class="card fade-up" style="--stagger: 2">
-                    <div class="card-icon">&#9646;</div>
-                    <h3 class="card-title">Craft</h3>
-                    <p class="card-text">Obsessive attention to detail. The kind you feel before you see.</p>
+                <div id="score-right">
+                    <span class="score-label">CPU</span>
+                    <span class="score-games" id="ai-games">0</span>
+                    <span class="score-points" id="ai-points">0</span>
                 </div>
             </div>
         </div>
-    </section>
-
-    <!-- Story -->
-    <section class="story" id="story">
-        <div class="story-inner">
-            <p class="story-text">
-                <span class="story-word fade-up" style="--stagger: 0">This</span>
-                <span class="story-word fade-up" style="--stagger: 1">is</span>
-                <span class="story-word fade-up" style="--stagger: 2">more</span>
-                <span class="story-word fade-up" style="--stagger: 3">than</span>
-                <span class="story-word fade-up" style="--stagger: 4">a</span>
-                <span class="story-word fade-up" style="--stagger: 5">page.</span>
-                <span class="story-word fade-up" style="--stagger: 6">It's</span>
-                <span class="story-word fade-up" style="--stagger: 7">a</span>
-                <span class="story-word fade-up" style="--stagger: 8">statement.</span>
-            </p>
-            <p class="story-subtext fade-up" style="--stagger: 9">Every great thing starts with two simple words.</p>
+        <div id="menu-screen">
+            <div class="menu-title">
+                <div class="title-line">8-BIT</div>
+                <div class="title-line title-big">TENNIS</div>
+            </div>
+            <div class="menu-subtitle">GRAND SLAM EDITION</div>
+            <div class="menu-controls">
+                <p>ARROW KEYS - MOVE</p>
+                <p>SPACE - SWING / SERVE</p>
+                <p>Z - LOB SHOT</p>
+            </div>
+            <button id="start-btn" class="pixel-btn">START GAME</button>
+            <button id="generate-btn" class="pixel-btn pixel-btn--alt">AI SPRITES (GEMINI)</button>
+            <div id="gen-status" class="gen-status"></div>
         </div>
-    </section>
-
-    <!-- Footer -->
-    <footer class="footer">
-        <div class="footer-inner">
-            <p class="footer-text">Crafted with precision.</p>
-            <p class="footer-copyright">&copy; 2026 Hello World</p>
+        <div id="message-overlay" class="hidden">
+            <div id="message-text"></div>
         </div>
-    </footer>
+    </div>
 
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const faders = document.querySelectorAll('.fade-up');
+    // ============================================================
+    //  8-BIT TENNIS - Complete Game Engine
+    // ============================================================
+    (() => {
+    'use strict';
 
-            const prefersReducedMotion = window.matchMedia(
-                '(prefers-reduced-motion: reduce)'
-            ).matches;
+    // --- Constants ---
+    const W = 640, H = 480;
+    const NATIVE_W = 320, NATIVE_H = 240;
+    const SCALE = 2;
+    const GRAVITY = 28;
+    const BOUNCE_DAMP = 0.55;
+    const BALL_SPEED = 1.8;
+    const PLAYER_SPEED = 1.6;
+    const AI_SPEED = 1.3;
+    const SWING_DURATION = 0.25;
+    const HIT_RANGE = 0.18;
+    const SERVE_HEIGHT = 0.7;
+    const NET_Z = 0.48;
+    const GEMINI_KEY = 'AIzaSyAmC1dOQ6lVuHQPw8V3s5fmz67nqWrEavg';
 
-            if (prefersReducedMotion) {
-                faders.forEach(el => el.classList.add('is-visible'));
+    // Court perspective
+    const COURT = {
+        vanishX: NATIVE_W / 2,
+        vanishY: 35,
+        nearY: 225,
+        farY: 55,
+        nearHalfW: 120,
+        farHalfW: 38,
+        netY: 128,
+        color: '#2d6b2d',
+        lineColor: '#ffffff',
+        dirtColor: '#c4813a',
+    };
+
+    // States
+    const S = { MENU: 0, SERVING: 1, PLAYING: 2, POINT: 3, GAME_OVER: 4, GENERATING: 5 };
+
+    // Tennis scoring
+    const POINT_NAMES = ['0', '15', '30', '40'];
+
+    // --- Canvas Setup ---
+    const canvas = document.getElementById('game-canvas');
+    const ctx = canvas.getContext('2d');
+    ctx.imageSmoothingEnabled = false;
+
+    // Off-screen buffer for pixel-perfect rendering
+    const buf = document.createElement('canvas');
+    buf.width = NATIVE_W;
+    buf.height = NATIVE_H;
+    const bctx = buf.getContext('2d');
+    bctx.imageSmoothingEnabled = false;
+
+    // --- Input ---
+    const keys = {};
+    const justPressed = {};
+    window.addEventListener('keydown', e => {
+        if (['ArrowLeft','ArrowRight','ArrowUp','ArrowDown','Space','KeyZ','Enter'].includes(e.code)) {
+            e.preventDefault();
+            if (!keys[e.code]) justPressed[e.code] = true;
+            keys[e.code] = true;
+        }
+    });
+    window.addEventListener('keyup', e => { keys[e.code] = false; });
+
+    // --- Sound Engine (Web Audio API 8-bit sounds) ---
+    const AudioCtx = window.AudioContext || window.webkitAudioContext;
+    let audioCtx;
+    function ensureAudio() {
+        if (!audioCtx) audioCtx = new AudioCtx();
+    }
+
+    function playTone(freq, duration, type = 'square', vol = 0.15) {
+        ensureAudio();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = type;
+        osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+        gain.gain.setValueAtTime(vol, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + duration);
+    }
+
+    function sfxHit()    { playTone(440, 0.08, 'square', 0.2); playTone(880, 0.06, 'square', 0.1); }
+    function sfxBounce() { playTone(220, 0.05, 'triangle', 0.15); }
+    function sfxPoint()  { playTone(523, 0.15, 'square', 0.15); setTimeout(()=>playTone(659, 0.15, 'square', 0.15), 150); setTimeout(()=>playTone(784, 0.3, 'square', 0.15), 300); }
+    function sfxLose()   { playTone(392, 0.2, 'square', 0.15); setTimeout(()=>playTone(330, 0.2, 'square', 0.15), 200); setTimeout(()=>playTone(262, 0.4, 'square', 0.15), 400); }
+    function sfxServe()  { playTone(330, 0.05, 'square', 0.12); setTimeout(()=>playTone(660, 0.1, 'square', 0.15), 50); }
+    function sfxNet()    { playTone(150, 0.15, 'sawtooth', 0.1); }
+    function sfxSwing()  { playTone(200, 0.04, 'sawtooth', 0.08); }
+
+    // --- Perspective Helpers ---
+    function courtToScreen(cx, cz) {
+        // cx: -1 to 1 (left to right), cz: 0 (near) to 1 (far)
+        const t = cz;
+        const sy = COURT.nearY + (COURT.farY - COURT.nearY) * t;
+        const halfW = COURT.nearHalfW + (COURT.farHalfW - COURT.nearHalfW) * t;
+        const sx = COURT.vanishX + cx * halfW;
+        return { x: sx, y: sy };
+    }
+
+    function worldToScreen(cx, cz, height) {
+        const ground = courtToScreen(cx, cz);
+        const perspScale = 1 - cz * 0.65;
+        const screenH = height * 120 * perspScale;
+        return { x: ground.x, y: ground.y - screenH, groundY: ground.y, scale: perspScale };
+    }
+
+    function getCourtWidth(cz) {
+        const t = cz;
+        return COURT.nearHalfW + (COURT.farHalfW - COURT.nearHalfW) * t;
+    }
+
+    // --- Sprite Drawing (Programmatic Pixel Art) ---
+    let useAISprites = false;
+    let aiSpriteImages = {};
+
+    // Create a small pixel sprite on a temp canvas
+    function createSprite(w, h, drawFn) {
+        const c = document.createElement('canvas');
+        c.width = w; c.height = h;
+        const cx = c.getContext('2d');
+        cx.imageSmoothingEnabled = false;
+        drawFn(cx);
+        return c;
+    }
+
+    // Palette
+    const PAL = {
+        skin: '#fca',
+        skinDark: '#c86',
+        hairDark: '#420',
+        hairBrown: '#840',
+        white: '#fff',
+        red: '#e22',
+        redDark: '#a11',
+        blue: '#28e',
+        blueDark: '#16a',
+        shorts: '#fff',
+        racket: '#db0',
+        racketHead: '#ddd',
+        shoe: '#fff',
+        shoeDark: '#bbb',
+        ball: '#cf0',
+        ballDark: '#8a0',
+        shadow: 'rgba(0,0,0,0.35)',
+    };
+
+    // Draw pixel helper
+    function px(cx, x, y, color) {
+        cx.fillStyle = color;
+        cx.fillRect(x, y, 1, 1);
+    }
+
+    // Player sprite (back view) - 12x16
+    function drawPlayerBack(cx, shirtColor, shirtDark, frame) {
+        // frame: 0=idle, 1=left, 2=right, 3=swing
+        // Head (hair)
+        px(cx,4,0,PAL.hairDark); px(cx,5,0,PAL.hairDark); px(cx,6,0,PAL.hairDark); px(cx,7,0,PAL.hairDark);
+        px(cx,3,1,PAL.hairDark); px(cx,4,1,PAL.hairBrown); px(cx,5,1,PAL.hairBrown); px(cx,6,1,PAL.hairBrown); px(cx,7,1,PAL.hairBrown); px(cx,8,1,PAL.hairDark);
+        px(cx,3,2,PAL.hairDark); px(cx,4,2,PAL.hairBrown); px(cx,5,2,PAL.hairBrown); px(cx,6,2,PAL.hairBrown); px(cx,7,2,PAL.hairBrown); px(cx,8,2,PAL.hairDark);
+        // Neck
+        px(cx,5,3,PAL.skin); px(cx,6,3,PAL.skin);
+        // Shirt
+        for (let y = 4; y <= 8; y++) {
+            for (let x = 3; x <= 8; x++) {
+                px(cx, x, y, (x === 3 || x === 8) ? shirtDark : shirtColor);
+            }
+        }
+        // Arms
+        if (frame === 0 || frame === 1 || frame === 2) {
+            // Arms at sides
+            px(cx,2,4,PAL.skin); px(cx,2,5,PAL.skin); px(cx,2,6,PAL.skin);
+            px(cx,9,4,PAL.skin); px(cx,9,5,PAL.skin); px(cx,9,6,PAL.skin);
+            // Racket in right hand
+            px(cx,10,4,PAL.racket); px(cx,10,5,PAL.racket); px(cx,10,3,PAL.racketHead); px(cx,11,3,PAL.racketHead); px(cx,10,2,PAL.racketHead); px(cx,11,2,PAL.racketHead);
+        } else if (frame === 3) {
+            // Swing - arm extended right
+            px(cx,2,4,PAL.skin); px(cx,2,5,PAL.skin); px(cx,2,6,PAL.skin);
+            px(cx,9,4,PAL.skin); px(cx,10,3,PAL.skin); px(cx,11,2,PAL.skin);
+            // Racket extended
+            px(cx,11,1,PAL.racket); px(cx,11,0,PAL.racketHead); px(cx,10,0,PAL.racketHead); px(cx,11,-1,PAL.racketHead);
+        }
+        // Lean for movement
+        let legOffX = 0;
+        if (frame === 1) legOffX = -1;
+        if (frame === 2) legOffX = 1;
+        // Shorts
+        for (let x = 3; x <= 8; x++) {
+            px(cx, x + legOffX, 9, PAL.shorts);
+            px(cx, x + legOffX, 10, PAL.shorts);
+        }
+        // Legs
+        px(cx, 4+legOffX, 11, PAL.skin); px(cx, 7+legOffX, 11, PAL.skin);
+        px(cx, 4+legOffX, 12, PAL.skin); px(cx, 7+legOffX, 12, PAL.skin);
+        px(cx, 4+legOffX, 13, PAL.skin); px(cx, 7+legOffX, 13, PAL.skin);
+        // Shoes
+        px(cx, 3+legOffX, 14, PAL.shoe); px(cx, 4+legOffX, 14, PAL.shoe); px(cx, 5+legOffX, 14, PAL.shoe);
+        px(cx, 6+legOffX, 14, PAL.shoe); px(cx, 7+legOffX, 14, PAL.shoe); px(cx, 8+legOffX, 14, PAL.shoe);
+        px(cx, 3+legOffX, 15, PAL.shoeDark); px(cx, 4+legOffX, 15, PAL.shoeDark); px(cx, 5+legOffX, 15, PAL.shoeDark);
+        px(cx, 6+legOffX, 15, PAL.shoeDark); px(cx, 7+legOffX, 15, PAL.shoeDark); px(cx, 8+legOffX, 15, PAL.shoeDark);
+    }
+
+    // Player sprite (front view for AI) - 12x16
+    function drawPlayerFront(cx, shirtColor, shirtDark, frame) {
+        // Head (face)
+        px(cx,4,0,PAL.hairDark); px(cx,5,0,PAL.hairDark); px(cx,6,0,PAL.hairDark); px(cx,7,0,PAL.hairDark);
+        px(cx,3,1,PAL.hairDark); px(cx,4,1,PAL.skin); px(cx,5,1,PAL.skin); px(cx,6,1,PAL.skin); px(cx,7,1,PAL.skin); px(cx,8,1,PAL.hairDark);
+        px(cx,3,2,PAL.skin); px(cx,4,2,'#333'); px(cx,5,2,PAL.skin); px(cx,6,2,PAL.skin); px(cx,7,2,'#333'); px(cx,8,2,PAL.skin);
+        px(cx,4,3,PAL.skin); px(cx,5,3,PAL.skinDark); px(cx,6,3,PAL.skinDark); px(cx,7,3,PAL.skin);
+        // Neck
+        px(cx,5,4,PAL.skin); px(cx,6,4,PAL.skin);
+        // Shirt
+        for (let y = 5; y <= 9; y++) {
+            for (let x = 3; x <= 8; x++) {
+                px(cx, x, y, (x === 3 || x === 8) ? shirtDark : shirtColor);
+            }
+        }
+        // Arms
+        px(cx,2,5,PAL.skin); px(cx,2,6,PAL.skin); px(cx,2,7,PAL.skin);
+        px(cx,9,5,PAL.skin); px(cx,9,6,PAL.skin); px(cx,9,7,PAL.skin);
+        if (frame === 3) {
+            px(cx,10,5,PAL.skin); px(cx,11,4,PAL.racket);
+            px(cx,11,3,PAL.racketHead); px(cx,10,3,PAL.racketHead); px(cx,11,2,PAL.racketHead);
+        } else {
+            px(cx,10,5,PAL.racket); px(cx,10,6,PAL.racket);
+            px(cx,10,4,PAL.racketHead); px(cx,11,4,PAL.racketHead); px(cx,10,3,PAL.racketHead); px(cx,11,3,PAL.racketHead);
+        }
+        // Shorts
+        let legOffX = 0;
+        if (frame === 1) legOffX = -1;
+        if (frame === 2) legOffX = 1;
+        for (let x = 3; x <= 8; x++) {
+            px(cx, x+legOffX, 10, PAL.shorts);
+            px(cx, x+legOffX, 11, PAL.shorts);
+        }
+        // Legs
+        px(cx,4+legOffX,12,PAL.skin); px(cx,7+legOffX,12,PAL.skin);
+        px(cx,4+legOffX,13,PAL.skin); px(cx,7+legOffX,13,PAL.skin);
+        // Shoes
+        px(cx,3+legOffX,14,PAL.shoe); px(cx,4+legOffX,14,PAL.shoe); px(cx,5+legOffX,14,PAL.shoe);
+        px(cx,6+legOffX,14,PAL.shoe); px(cx,7+legOffX,14,PAL.shoe); px(cx,8+legOffX,14,PAL.shoe);
+        px(cx,3+legOffX,15,PAL.shoeDark); px(cx,4+legOffX,15,PAL.shoeDark);
+        px(cx,6+legOffX,15,PAL.shoeDark); px(cx,7+legOffX,15,PAL.shoeDark);
+    }
+
+    // Pre-build sprite sheets
+    const sprites = { player: [], ai: [], ball: null, ballShadow: null };
+
+    function buildSprites() {
+        // Player sprites (back view) - 4 frames
+        for (let f = 0; f < 4; f++) {
+            sprites.player[f] = createSprite(14, 18, c => drawPlayerBack(c, PAL.red, PAL.redDark, f));
+        }
+        // AI sprites (front view) - 4 frames
+        for (let f = 0; f < 4; f++) {
+            sprites.ai[f] = createSprite(14, 18, c => drawPlayerFront(c, PAL.blue, PAL.blueDark, f));
+        }
+        // Ball
+        sprites.ball = createSprite(4, 4, c => {
+            px(c,1,0,PAL.ball); px(c,2,0,PAL.ball);
+            px(c,0,1,PAL.ball); px(c,1,1,'#ff0'); px(c,2,1,PAL.ball); px(c,3,1,PAL.ballDark);
+            px(c,0,2,PAL.ball); px(c,1,2,PAL.ball); px(c,2,2,PAL.ballDark); px(c,3,2,PAL.ballDark);
+            px(c,1,3,PAL.ballDark); px(c,2,3,PAL.ballDark);
+        });
+        // Ball shadow
+        sprites.ballShadow = createSprite(6, 3, c => {
+            c.fillStyle = PAL.shadow;
+            c.fillRect(1, 0, 4, 1);
+            c.fillRect(0, 1, 6, 1);
+            c.fillRect(1, 2, 4, 1);
+        });
+    }
+    buildSprites();
+
+    // --- Game State ---
+    let state = S.MENU;
+    let stateTimer = 0;
+    let messageText = '';
+    let server = 'player'; // who serves
+
+    // Score
+    let score = {
+        playerPoints: 0,
+        aiPoints: 0,
+        playerGames: 0,
+        aiGames: 0,
+        deuce: false,
+        advantage: '', // 'player' or 'ai' or ''
+    };
+
+    // Ball
+    let ball = {
+        cx: 0, cz: 0.85, h: 0,
+        vx: 0, vz: 0, vh: 0,
+        active: false,
+        bounces: 0,
+        lastBounceSide: '',
+        served: false,
+        trail: [],
+    };
+
+    // Player
+    let player = {
+        cx: 0, cz: 0.82,
+        frame: 0, swinging: false, swingTimer: 0,
+        moveDir: 0,
+        animTimer: 0,
+        runFrame: 0,
+    };
+
+    // AI
+    let ai = {
+        cx: 0, cz: 0.15,
+        frame: 0, swinging: false, swingTimer: 0,
+        targetX: 0, reactionDelay: 0,
+        moveDir: 0,
+        animTimer: 0,
+        runFrame: 0,
+        difficulty: 0.75, // 0 to 1
+    };
+
+    // --- Score Logic ---
+    function getPointDisplay(points, isDeuce, adv, who) {
+        if (isDeuce) {
+            if (adv === who) return 'AD';
+            if (adv !== '' && adv !== who) return '40';
+            return '40';
+        }
+        if (points < 4) return POINT_NAMES[points];
+        return '40';
+    }
+
+    function updateScoreDisplay() {
+        const pd = getPointDisplay(score.playerPoints, score.deuce, score.advantage, 'player');
+        const ad = getPointDisplay(score.aiPoints, score.deuce, score.advantage, 'ai');
+        document.getElementById('player-points').textContent = pd;
+        document.getElementById('ai-points').textContent = ad;
+        document.getElementById('player-games').textContent = score.playerGames;
+        document.getElementById('ai-games').textContent = score.aiGames;
+    }
+
+    function awardPoint(who) {
+        const winner = who;
+        const loser = who === 'player' ? 'ai' : 'player';
+
+        if (score.deuce) {
+            if (score.advantage === winner) {
+                // Win the game
+                awardGame(winner);
+                return;
+            } else if (score.advantage === loser) {
+                // Back to deuce
+                score.advantage = '';
+            } else {
+                // Gain advantage
+                score.advantage = winner;
+            }
+        } else {
+            if (winner === 'player') score.playerPoints++;
+            else score.aiPoints++;
+
+            // Check for deuce
+            if (score.playerPoints >= 3 && score.aiPoints >= 3) {
+                if (score.playerPoints === score.aiPoints) {
+                    score.deuce = true;
+                    score.advantage = '';
+                } else if (score.playerPoints > score.aiPoints) {
+                    awardGame('player');
+                    return;
+                } else {
+                    awardGame('ai');
+                    return;
+                }
+            } else if (score.playerPoints >= 4) {
+                awardGame('player');
+                return;
+            } else if (score.aiPoints >= 4) {
+                awardGame('ai');
                 return;
             }
+        }
 
-            const observer = new IntersectionObserver(
-                (entries) => {
-                    entries.forEach(entry => {
-                        if (entry.isIntersecting) {
-                            entry.target.classList.add('is-visible');
-                            observer.unobserve(entry.target);
-                        }
-                    });
-                },
-                { threshold: 0.15, rootMargin: '0px 0px -60px 0px' }
-            );
+        updateScoreDisplay();
+        showMessage(score.deuce ? 'DEUCE!' : (score.advantage ? 'ADVANTAGE ' + (score.advantage === 'player' ? 'YOU' : 'CPU') + '!' : (winner === 'player' ? 'YOUR POINT!' : 'CPU POINT!')));
 
-            faders.forEach(el => observer.observe(el));
+        if (winner === 'player') sfxPoint();
+        else sfxLose();
+
+        // Switch server
+        server = server === 'player' ? 'ai' : 'player';
+        state = S.POINT;
+        stateTimer = 2;
+    }
+
+    function awardGame(winner) {
+        if (winner === 'player') score.playerGames++;
+        else score.aiGames++;
+
+        score.playerPoints = 0;
+        score.aiPoints = 0;
+        score.deuce = false;
+        score.advantage = '';
+
+        updateScoreDisplay();
+
+        // Check for set win (first to 6, must win by 2)
+        if ((score.playerGames >= 6 || score.aiGames >= 6) &&
+            Math.abs(score.playerGames - score.aiGames) >= 2) {
+            showMessage(winner === 'player' ? 'YOU WIN THE SET!' : 'CPU WINS THE SET!');
+            if (winner === 'player') sfxPoint(); else sfxLose();
+            state = S.GAME_OVER;
+            stateTimer = 4;
+            return;
+        }
+
+        // Tiebreak at 6-6
+        if (score.playerGames >= 7 || score.aiGames >= 7) {
+            showMessage(winner === 'player' ? 'YOU WIN THE SET!' : 'CPU WINS THE SET!');
+            if (winner === 'player') sfxPoint(); else sfxLose();
+            state = S.GAME_OVER;
+            stateTimer = 4;
+            return;
+        }
+
+        showMessage(winner === 'player' ? 'GAME - YOU!' : 'GAME - CPU!');
+        if (winner === 'player') sfxPoint(); else sfxLose();
+
+        server = server === 'player' ? 'ai' : 'player';
+        state = S.POINT;
+        stateTimer = 2.5;
+    }
+
+    // --- Message System ---
+    const msgOverlay = document.getElementById('message-overlay');
+    const msgText = document.getElementById('message-text');
+
+    function showMessage(text) {
+        messageText = text;
+        msgText.textContent = text;
+        msgOverlay.classList.remove('hidden');
+    }
+
+    function hideMessage() {
+        msgOverlay.classList.add('hidden');
+    }
+
+    // --- Game Reset ---
+    function resetForServe() {
+        ball.active = false;
+        ball.bounces = 0;
+        ball.lastBounceSide = '';
+        ball.served = false;
+        ball.trail = [];
+
+        if (server === 'player') {
+            player.cx = 0.1;
+            player.cz = 0.85;
+            ball.cx = 0.1;
+            ball.cz = 0.85;
+            ball.h = 0;
+        } else {
+            ai.cx = -0.1;
+            ai.cz = 0.15;
+            ball.cx = -0.1;
+            ball.cz = 0.15;
+            ball.h = 0;
+        }
+
+        state = S.SERVING;
+        hideMessage();
+    }
+
+    function resetMatch() {
+        score.playerPoints = 0;
+        score.aiPoints = 0;
+        score.playerGames = 0;
+        score.aiGames = 0;
+        score.deuce = false;
+        score.advantage = '';
+        server = 'player';
+        player.cx = 0;
+        player.cz = 0.82;
+        ai.cx = 0;
+        ai.cz = 0.15;
+        updateScoreDisplay();
+        resetForServe();
+    }
+
+    // --- Serve Logic ---
+    function playerServe() {
+        sfxServe();
+        ball.active = true;
+        ball.served = true;
+        ball.bounces = 0;
+        ball.lastBounceSide = '';
+        ball.cx = player.cx;
+        ball.cz = player.cz;
+        ball.h = SERVE_HEIGHT;
+        // Serve toward opponent's service box
+        const targetX = -0.2 + Math.random() * 0.4;
+        ball.vx = (targetX - ball.cx) * 0.8;
+        ball.vz = -BALL_SPEED * 1.1;
+        ball.vh = 0.6;
+        ball.trail = [];
+        state = S.PLAYING;
+    }
+
+    function aiServe() {
+        sfxServe();
+        ball.active = true;
+        ball.served = true;
+        ball.bounces = 0;
+        ball.lastBounceSide = '';
+        ball.cx = ai.cx;
+        ball.cz = ai.cz;
+        ball.h = SERVE_HEIGHT;
+        const targetX = -0.3 + Math.random() * 0.6;
+        ball.vx = (targetX - ball.cx) * 0.7;
+        ball.vz = BALL_SPEED * 0.95;
+        ball.vh = 0.5;
+        ball.trail = [];
+        state = S.PLAYING;
+    }
+
+    // --- Hit Ball ---
+    function hitBall(hitter, isLob) {
+        const dir = hitter === 'player' ? -1 : 1; // toward opponent
+        const targetX = -0.6 + Math.random() * 1.2;
+        const power = isLob ? 0.7 : (0.9 + Math.random() * 0.3);
+
+        ball.vx = (targetX - ball.cx) * (0.5 + Math.random() * 0.4);
+        ball.vz = dir * BALL_SPEED * power;
+        ball.vh = isLob ? 1.2 : (0.35 + Math.random() * 0.25);
+        ball.bounces = 0;
+        ball.lastBounceSide = '';
+        ball.trail = [];
+
+        if (hitter === 'player') {
+            player.swinging = true;
+            player.swingTimer = SWING_DURATION;
+            player.frame = 3;
+        } else {
+            ai.swinging = true;
+            ai.swingTimer = SWING_DURATION;
+            ai.frame = 3;
+        }
+
+        sfxHit();
+    }
+
+    // --- Update Functions ---
+    function updateBall(dt) {
+        if (!ball.active) return;
+
+        // Physics
+        ball.cx += ball.vx * dt;
+        ball.cz += ball.vz * dt;
+        ball.h += ball.vh * dt;
+        ball.vh -= GRAVITY * dt * 0.03;
+
+        // Trail
+        ball.trail.push({ cx: ball.cx, cz: ball.cz, h: ball.h, age: 0 });
+        if (ball.trail.length > 8) ball.trail.shift();
+        ball.trail.forEach(t => t.age += dt);
+
+        // Bounce on ground
+        if (ball.h <= 0 && ball.vh < 0) {
+            ball.h = 0;
+            ball.vh = Math.abs(ball.vh) * BOUNCE_DAMP;
+            ball.bounces++;
+            ball.lastBounceSide = ball.cz > NET_Z ? 'near' : 'far';
+            sfxBounce();
+
+            // Ball very low bounce = dead
+            if (ball.vh < 0.05) {
+                ball.vh = 0;
+            }
+
+            // Double bounce = point
+            if (ball.bounces >= 2) {
+                if (ball.cz > NET_Z) {
+                    // Bounced twice on player side
+                    awardPoint('ai');
+                    return;
+                } else {
+                    // Bounced twice on AI side
+                    awardPoint('player');
+                    return;
+                }
+            }
+        }
+
+        // Net collision
+        if (Math.abs(ball.cz - NET_Z) < 0.03 && ball.h < 0.12) {
+            sfxNet();
+            ball.vz *= -0.3;
+            ball.vh = 0.1;
+            // Net fault
+            if (ball.vz > 0 && ball.cz < NET_Z) {
+                awardPoint('player');
+                return;
+            } else if (ball.vz < 0 && ball.cz > NET_Z) {
+                awardPoint('ai');
+                return;
+            }
+        }
+
+        // Out of bounds (sides)
+        if (Math.abs(ball.cx) > 1.15) {
+            if (ball.vz < 0) {
+                // Ball going toward AI side, last hit by player
+                awardPoint('ai'); // Player hit it out
+            } else {
+                awardPoint('player'); // AI hit it out
+            }
+            return;
+        }
+
+        // Out of bounds (long)
+        if (ball.cz < -0.1) {
+            awardPoint('player');
+            return;
+        }
+        if (ball.cz > 1.1) {
+            awardPoint('ai');
+            return;
+        }
+    }
+
+    function updatePlayer(dt) {
+        let moving = false;
+        let mx = 0, mz = 0;
+
+        if (keys['ArrowLeft'])  { mx = -1; moving = true; }
+        if (keys['ArrowRight']) { mx = 1; moving = true; }
+        if (keys['ArrowUp'])    { mz = -1; moving = true; }
+        if (keys['ArrowDown'])  { mz = 1; moving = true; }
+
+        if (moving) {
+            const len = Math.sqrt(mx*mx + mz*mz);
+            player.cx += (mx/len) * PLAYER_SPEED * dt;
+            player.cz += (mz/len) * PLAYER_SPEED * dt * 0.5;
+        }
+
+        // Clamp to player's half
+        player.cx = Math.max(-1.1, Math.min(1.1, player.cx));
+        player.cz = Math.max(0.5, Math.min(0.95, player.cz));
+
+        // Animation
+        if (player.swinging) {
+            player.swingTimer -= dt;
+            if (player.swingTimer <= 0) {
+                player.swinging = false;
+                player.frame = 0;
+            }
+        } else if (moving) {
+            player.animTimer += dt;
+            if (player.animTimer > 0.12) {
+                player.animTimer = 0;
+                player.runFrame = 1 - player.runFrame;
+            }
+            player.frame = mx < 0 ? 1 : (mx > 0 ? 2 : (player.runFrame ? 1 : 2));
+        } else {
+            player.frame = 0;
+            player.animTimer = 0;
+        }
+
+        // Swing / hit
+        if (justPressed['Space'] && !player.swinging && state === S.PLAYING) {
+            sfxSwing();
+            player.swinging = true;
+            player.swingTimer = SWING_DURATION;
+            player.frame = 3;
+
+            // Check hit
+            if (ball.active) {
+                const dx = ball.cx - player.cx;
+                const dz = ball.cz - player.cz;
+                const dist = Math.sqrt(dx*dx + dz*dz);
+                if (dist < HIT_RANGE && ball.h < 0.6) {
+                    hitBall('player', keys['KeyZ']);
+                }
+            }
+        }
+    }
+
+    function updateAI(dt) {
+        if (!ball.active) {
+            // Return to center
+            const dx = 0 - ai.cx;
+            ai.cx += Math.sign(dx) * Math.min(Math.abs(dx), AI_SPEED * dt * 0.5);
+            ai.frame = 0;
+            return;
+        }
+
+        // Predict where ball will be
+        let targetX = ball.cx;
+        let targetZ = ai.cz;
+
+        if (ball.vz < 0) {
+            // Ball coming toward AI
+            const timeToReach = (ai.cz - ball.cz) / Math.abs(ball.vz);
+            targetX = ball.cx + ball.vx * timeToReach * ai.difficulty;
+        } else {
+            // Ball going away, move to center
+            targetX = 0;
+        }
+
+        targetX = Math.max(-0.9, Math.min(0.9, targetX));
+
+        // Move toward target
+        const dx = targetX - ai.cx;
+        const moveSpeed = AI_SPEED * (0.8 + ai.difficulty * 0.4);
+
+        if (Math.abs(dx) > 0.02) {
+            ai.cx += Math.sign(dx) * Math.min(Math.abs(dx), moveSpeed * dt);
+
+            // Animation
+            ai.animTimer += dt;
+            if (ai.animTimer > 0.12) {
+                ai.animTimer = 0;
+                ai.runFrame = 1 - ai.runFrame;
+            }
+            ai.frame = dx < 0 ? 1 : 2;
+        } else {
+            ai.frame = 0;
+        }
+
+        ai.cx = Math.max(-1.1, Math.min(1.1, ai.cx));
+        ai.cz = Math.max(0.05, Math.min(0.45, ai.cz));
+
+        // AI swing
+        if (!ai.swinging && ball.vz < 0) {
+            const bdx = ball.cx - ai.cx;
+            const bdz = ball.cz - ai.cz;
+            const dist = Math.sqrt(bdx*bdx + bdz*bdz);
+            if (dist < HIT_RANGE * 1.1 && ball.h < 0.55) {
+                const isLob = Math.random() < 0.25;
+                hitBall('ai', isLob);
+            }
+        }
+
+        // Swing animation
+        if (ai.swinging) {
+            ai.swingTimer -= dt;
+            if (ai.swingTimer <= 0) {
+                ai.swinging = false;
+                ai.frame = 0;
+            }
+        }
+    }
+
+    // --- AI Serve Timer ---
+    let aiServeTimer = 0;
+
+    // --- Rendering ---
+    function renderCourt() {
+        // Sky gradient
+        const grad = bctx.createLinearGradient(0, 0, 0, COURT.farY + 20);
+        grad.addColorStop(0, '#4488cc');
+        grad.addColorStop(1, '#77bbee');
+        bctx.fillStyle = grad;
+        bctx.fillRect(0, 0, NATIVE_W, COURT.farY + 20);
+
+        // Background (stands/crowd)
+        bctx.fillStyle = '#553322';
+        bctx.fillRect(0, COURT.farY - 15, NATIVE_W, 25);
+        // Crowd dots
+        for (let i = 0; i < 60; i++) {
+            const cx = (i * 5.3 + 3) % NATIVE_W;
+            const cy = COURT.farY - 12 + (i % 3) * 6 + Math.sin(i * 1.7) * 3;
+            const colors = ['#e44','#44e','#ee4','#4e4','#fff','#f84','#e4e'];
+            bctx.fillStyle = colors[i % colors.length];
+            bctx.fillRect(Math.floor(cx), Math.floor(cy), 2, 3);
+        }
+
+        // Court surface
+        // Draw as a trapezoid
+        bctx.fillStyle = COURT.color;
+        bctx.beginPath();
+        bctx.moveTo(COURT.vanishX - COURT.farHalfW - 10, COURT.farY);
+        bctx.lineTo(COURT.vanishX + COURT.farHalfW + 10, COURT.farY);
+        bctx.lineTo(COURT.vanishX + COURT.nearHalfW + 15, COURT.nearY + 5);
+        bctx.lineTo(COURT.vanishX - COURT.nearHalfW - 15, COURT.nearY + 5);
+        bctx.fill();
+
+        // Court lines
+        bctx.strokeStyle = COURT.lineColor;
+        bctx.lineWidth = 1;
+
+        // Baselines
+        drawCourtLine(-1, 0, 1, 0);    // far baseline
+        drawCourtLine(-1, 1, 1, 1);    // near baseline
+
+        // Sidelines
+        drawCourtLine(-1, 0, -1, 1);   // left
+        drawCourtLine(1, 0, 1, 1);     // right
+
+        // Singles sidelines
+        drawCourtLine(-0.82, 0, -0.82, 1);
+        drawCourtLine(0.82, 0, 0.82, 1);
+
+        // Service line
+        drawCourtLine(-0.82, 0.33, 0.82, 0.33);  // far service
+        drawCourtLine(-0.82, 0.67, 0.82, 0.67);  // near service
+
+        // Center service line
+        drawCourtLine(0, 0.33, 0, 0.67);
+
+        // Center mark
+        drawCourtLine(0, 0, 0, 0.02);
+        drawCourtLine(0, 0.98, 0, 1);
+
+        // Net
+        renderNet();
+    }
+
+    function drawCourtLine(x1, z1, x2, z2) {
+        const p1 = courtToScreen(x1, z1);
+        const p2 = courtToScreen(x2, z2);
+        bctx.beginPath();
+        bctx.moveTo(Math.floor(p1.x) + 0.5, Math.floor(p1.y) + 0.5);
+        bctx.lineTo(Math.floor(p2.x) + 0.5, Math.floor(p2.y) + 0.5);
+        bctx.strokeStyle = COURT.lineColor;
+        bctx.lineWidth = 1;
+        bctx.stroke();
+    }
+
+    function renderNet() {
+        const leftPost = courtToScreen(-1.05, NET_Z);
+        const rightPost = courtToScreen(1.05, NET_Z);
+        const netHeight = 8;
+
+        // Net posts
+        bctx.fillStyle = '#999';
+        bctx.fillRect(Math.floor(leftPost.x) - 1, Math.floor(leftPost.y) - netHeight, 2, netHeight + 2);
+        bctx.fillRect(Math.floor(rightPost.x) - 1, Math.floor(rightPost.y) - netHeight, 2, netHeight + 2);
+
+        // Net mesh
+        bctx.fillStyle = '#ccc';
+        const netTop = Math.floor(leftPost.y) - netHeight;
+        const netBot = Math.floor(leftPost.y);
+        for (let y = netTop; y <= netBot; y += 2) {
+            bctx.beginPath();
+            bctx.moveTo(Math.floor(leftPost.x), y + 0.5);
+            bctx.lineTo(Math.floor(rightPost.x), y + 0.5);
+            bctx.strokeStyle = y === netTop ? '#fff' : '#ccc';
+            bctx.lineWidth = 1;
+            bctx.stroke();
+        }
+        // Vertical net lines
+        const numVert = 15;
+        for (let i = 0; i <= numVert; i++) {
+            const t = i / numVert;
+            const x = Math.floor(leftPost.x + (rightPost.x - leftPost.x) * t);
+            bctx.beginPath();
+            bctx.moveTo(x + 0.5, netTop);
+            bctx.lineTo(x + 0.5, netBot);
+            bctx.strokeStyle = '#aaa';
+            bctx.lineWidth = 1;
+            bctx.stroke();
+        }
+    }
+
+    function renderBall() {
+        if (!ball.active && state !== S.SERVING) return;
+
+        const bx = ball.active ? ball.cx : ball.cx;
+        const bz = ball.active ? ball.cz : ball.cz;
+        const bh = ball.active ? ball.h : 0;
+
+        // Trail
+        ball.trail.forEach((t, i) => {
+            const ts = worldToScreen(t.cx, t.cz, t.h);
+            const alpha = (1 - t.age * 4) * 0.4;
+            if (alpha > 0) {
+                bctx.globalAlpha = alpha;
+                bctx.fillStyle = PAL.ball;
+                const sz = Math.max(1, Math.floor(2 * ts.scale));
+                bctx.fillRect(Math.floor(ts.x) - 1, Math.floor(ts.y) - 1, sz, sz);
+                bctx.globalAlpha = 1;
+            }
         });
-    </script>
 
+        // Shadow
+        const shadowPos = courtToScreen(bx, bz);
+        const sScale = 1 - bz * 0.5;
+        bctx.drawImage(sprites.ballShadow,
+            Math.floor(shadowPos.x - 3 * sScale),
+            Math.floor(shadowPos.y - 1),
+            Math.floor(6 * sScale),
+            Math.floor(3 * sScale)
+        );
+
+        // Ball
+        const bPos = worldToScreen(bx, bz, bh);
+        const bScale = bPos.scale;
+        const size = Math.max(2, Math.floor(4 * bScale));
+        bctx.drawImage(sprites.ball,
+            Math.floor(bPos.x - size / 2),
+            Math.floor(bPos.y - size / 2),
+            size, size
+        );
+    }
+
+    function renderPlayer() {
+        const pos = courtToScreen(player.cx, player.cz);
+        const scale = 1 - player.cz * 0.3;
+        const spriteW = Math.floor(14 * scale);
+        const spriteH = Math.floor(18 * scale);
+
+        // Shadow
+        bctx.fillStyle = PAL.shadow;
+        bctx.beginPath();
+        bctx.ellipse(Math.floor(pos.x), Math.floor(pos.y) + 1, spriteW * 0.4, 2, 0, 0, Math.PI * 2);
+        bctx.fill();
+
+        const sprite = (useAISprites && aiSpriteImages.player) ? aiSpriteImages.player[player.frame] : sprites.player[player.frame];
+        if (sprite) {
+            bctx.drawImage(sprite,
+                Math.floor(pos.x - spriteW / 2),
+                Math.floor(pos.y - spriteH),
+                spriteW, spriteH
+            );
+        }
+    }
+
+    function renderAI() {
+        const pos = courtToScreen(ai.cx, ai.cz);
+        const scale = 1 - ai.cz * 0.3;
+        const spriteW = Math.floor(14 * scale * 0.8);
+        const spriteH = Math.floor(18 * scale * 0.8);
+
+        // Shadow
+        bctx.fillStyle = PAL.shadow;
+        bctx.beginPath();
+        bctx.ellipse(Math.floor(pos.x), Math.floor(pos.y) + 1, spriteW * 0.35, 1.5, 0, 0, Math.PI * 2);
+        bctx.fill();
+
+        const sprite = (useAISprites && aiSpriteImages.ai) ? aiSpriteImages.ai[ai.frame] : sprites.ai[ai.frame];
+        if (sprite) {
+            bctx.drawImage(sprite,
+                Math.floor(pos.x - spriteW / 2),
+                Math.floor(pos.y - spriteH),
+                spriteW, spriteH
+            );
+        }
+    }
+
+    function renderServeIndicator() {
+        if (state !== S.SERVING) return;
+
+        const who = server === 'player' ? 'YOUR SERVE' : 'CPU SERVE';
+
+        // Render at native resolution
+        bctx.fillStyle = '#fff';
+        bctx.font = '6px monospace';
+        bctx.textAlign = 'center';
+        bctx.fillText(who, NATIVE_W / 2, 16);
+        bctx.fillText('PRESS SPACE', NATIVE_W / 2, 24);
+    }
+
+    // --- Main Render ---
+    function render() {
+        // Clear buffer
+        bctx.fillStyle = '#1a1a2e';
+        bctx.fillRect(0, 0, NATIVE_W, NATIVE_H);
+
+        renderCourt();
+
+        // Render entities in depth order (far first)
+        // AI is far (small cz), player is near (large cz)
+        // Ball depth varies
+
+        // Collect renderables with their z-depth for sorting
+        const renderables = [];
+        renderables.push({ z: ai.cz, render: renderAI });
+        renderables.push({ z: player.cz, render: renderPlayer });
+        if (ball.active || state === S.SERVING) {
+            renderables.push({ z: ball.cz, render: renderBall });
+        }
+
+        // Sort by z (far = small z first)
+        renderables.sort((a, b) => a.z - b.z);
+        renderables.forEach(r => r.render());
+
+        renderServeIndicator();
+
+        // Scale up to display canvas
+        ctx.imageSmoothingEnabled = false;
+        ctx.drawImage(buf, 0, 0, NATIVE_W, NATIVE_H, 0, 0, W, H);
+    }
+
+    // --- Main Update ---
+    function update(dt) {
+        switch (state) {
+            case S.SERVING:
+                if (server === 'player') {
+                    updatePlayer(dt);
+                    // Ball follows player until served
+                    ball.cx = player.cx + 0.05;
+                    ball.cz = player.cz;
+                    if (justPressed['Space']) {
+                        playerServe();
+                    }
+                } else {
+                    aiServeTimer += dt;
+                    ai.cx += (0 - ai.cx) * dt * 2;
+                    ball.cx = ai.cx;
+                    ball.cz = ai.cz;
+                    if (aiServeTimer > 1.5) {
+                        aiServeTimer = 0;
+                        aiServe();
+                    }
+                }
+                break;
+
+            case S.PLAYING:
+                updatePlayer(dt);
+                updateAI(dt);
+                updateBall(dt);
+                break;
+
+            case S.POINT:
+                stateTimer -= dt;
+                if (stateTimer <= 0) {
+                    resetForServe();
+                }
+                break;
+
+            case S.GAME_OVER:
+                stateTimer -= dt;
+                if (stateTimer <= 0) {
+                    state = S.MENU;
+                    document.getElementById('menu-screen').style.display = 'flex';
+                    hideMessage();
+                }
+                break;
+        }
+
+        // Clear justPressed
+        Object.keys(justPressed).forEach(k => delete justPressed[k]);
+    }
+
+    // --- Game Loop ---
+    let lastTime = 0;
+    function gameLoop(timestamp) {
+        const dt = Math.min((timestamp - lastTime) / 1000, 0.05);
+        lastTime = timestamp;
+
+        if (state !== S.MENU && state !== S.GENERATING) {
+            update(dt);
+            render();
+        }
+
+        requestAnimationFrame(gameLoop);
+    }
+
+    // --- Menu ---
+    document.getElementById('start-btn').addEventListener('click', () => {
+        document.getElementById('menu-screen').style.display = 'none';
+        resetMatch();
+        ensureAudio();
+    });
+
+    // --- Gemini Sprite Generation ---
+    const genStatus = document.getElementById('gen-status');
+
+    document.getElementById('generate-btn').addEventListener('click', async () => {
+        genStatus.textContent = 'Generating sprites with Gemini AI...';
+        genStatus.style.color = '#cf0';
+
+        try {
+            const playerPrompt = 'Create a pixel art sprite of an 8-bit retro tennis player character seen from behind (back view). The character should be approximately 14x18 pixels, wearing a red shirt and white shorts, holding a tennis racket. NES/Game Boy style pixel art with clean outlines. The background must be completely transparent. Show the character in a standing idle pose.';
+
+            const aiPrompt = 'Create a pixel art sprite of an 8-bit retro tennis player character seen from the front (facing the viewer). The character should be approximately 14x18 pixels, wearing a blue shirt and white shorts, holding a tennis racket. NES/Game Boy style pixel art with clean outlines. The background must be completely transparent. Show the character in a standing idle pose.';
+
+            const [playerResult, aiResult] = await Promise.all([
+                callGemini(playerPrompt),
+                callGemini(aiPrompt)
+            ]);
+
+            if (playerResult) {
+                const img = new Image();
+                img.onload = () => {
+                    aiSpriteImages.player = [img, img, img, img];
+                    genStatus.textContent = 'Player sprite generated!';
+                };
+                img.src = playerResult;
+            }
+
+            if (aiResult) {
+                const img = new Image();
+                img.onload = () => {
+                    aiSpriteImages.ai = [img, img, img, img];
+                    genStatus.textContent = 'All sprites generated!';
+                    genStatus.style.color = '#0f0';
+                    useAISprites = true;
+                };
+                img.src = aiResult;
+            }
+
+            if (!playerResult && !aiResult) {
+                genStatus.textContent = 'Could not generate images. Using default sprites.';
+                genStatus.style.color = '#f44';
+            }
+
+        } catch (err) {
+            console.error('Gemini error:', err);
+            genStatus.textContent = 'Error: ' + err.message;
+            genStatus.style.color = '#f44';
+        }
+    });
+
+    async function callGemini(prompt) {
+        const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent?key=${GEMINI_KEY}`;
+        const body = {
+            contents: [{ role: 'user', parts: [{ text: prompt }] }],
+            generationConfig: {
+                responseModalities: ['TEXT', 'IMAGE'],
+            }
+        };
+
+        const res = await fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(body),
+        });
+
+        if (!res.ok) {
+            const errText = await res.text();
+            throw new Error(`API error ${res.status}: ${errText}`);
+        }
+
+        const data = await res.json();
+
+        // Look for inline image data
+        if (data.candidates && data.candidates[0]) {
+            const parts = data.candidates[0].content.parts;
+            for (const part of parts) {
+                if (part.inlineData && part.inlineData.mimeType.startsWith('image/')) {
+                    return `data:${part.inlineData.mimeType};base64,${part.inlineData.data}`;
+                }
+            }
+        }
+        return null;
+    }
+
+    // --- Keyboard shortcut for menu ---
+    window.addEventListener('keydown', e => {
+        if (e.code === 'Enter' && state === S.MENU) {
+            document.getElementById('start-btn').click();
+        }
+    });
+
+    // --- Start ---
+    requestAnimationFrame(gameLoop);
+    updateScoreDisplay();
+
+    // Render menu preview
+    function renderMenuPreview() {
+        if (state !== S.MENU && state !== S.GENERATING) return;
+
+        bctx.fillStyle = '#1a1a2e';
+        bctx.fillRect(0, 0, NATIVE_W, NATIVE_H);
+        renderCourt();
+
+        // Draw static player & AI
+        const pPos = courtToScreen(0, 0.82);
+        bctx.drawImage(sprites.player[0], Math.floor(pPos.x - 7), Math.floor(pPos.y - 18), 14, 18);
+        const aPos = courtToScreen(0, 0.15);
+        bctx.drawImage(sprites.ai[0], Math.floor(aPos.x - 5), Math.floor(aPos.y - 12), 10, 14);
+
+        ctx.imageSmoothingEnabled = false;
+        ctx.drawImage(buf, 0, 0, NATIVE_W, NATIVE_H, 0, 0, W, H);
+
+        if (state === S.MENU || state === S.GENERATING) {
+            requestAnimationFrame(renderMenuPreview);
+        }
+    }
+    renderMenuPreview();
+
+    })();
+    </script>
 </body>
 </html>
